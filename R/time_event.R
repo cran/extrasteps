@@ -6,9 +6,11 @@
 #' @inheritParams recipes::step_center
 #' @inheritParams recipes::step_date
 #' @param rules Named list of `almanac` rules.
-#' @param columns A character string of variables that will be
-#'  used as inputs. This field is a placeholder and will be
-#'  populated once [recipes::prep.recipe()] is used.
+#' @param columns A character string of variables that will be used as inputs.
+#'   This field is a placeholder and will be populated once
+#'   [recipes::prep.recipe()] is used.
+#' @param keep_original_cols A logical to keep the original variables in the
+#'   output. Defaults to `FALSE`.
 #' @return An updated version of `recipe` with the new check added to the
 #'  sequence of any existing operations.
 #' @export
@@ -36,16 +38,17 @@
 #'
 #' bake(rec_spec_preped, new_data = NULL)
 step_time_event <-
-  function(recipe,
-           ...,
-           role = "predictor",
-           trained = FALSE,
-           rules = list(),
-           columns = NULL,
-           keep_original_cols = FALSE,
-           skip = FALSE,
-           id = rand_id("time_event")) {
-
+  function(
+    recipe,
+    ...,
+    role = "predictor",
+    trained = FALSE,
+    rules = list(),
+    columns = NULL,
+    keep_original_cols = FALSE,
+    skip = FALSE,
+    id = rand_id("time_event")
+  ) {
     add_step(
       recipe,
       step_time_event_new(
@@ -74,19 +77,21 @@ step_time_event_new <-
       skip = skip,
       id = id
     )
-}
+  }
 
 #' @export
 prep.step_time_event <- function(x, training, info = NULL, ...) {
   col_names <- recipes_eval_select(x$terms, training, info)
 
   date_data <- info[info$variable %in% col_names, ]
-  if (any(date_data$type != "date"))
+  if (any(date_data$type != "date")) {
     rlang::abort(
-      paste0("All variables for `step_date` should be either `Date` or",
-             "`POSIXct` classes."
+      paste0(
+        "All variables for `step_date` should be either `Date` or",
+        "`POSIXct` classes."
       )
     )
+  }
 
   if (is.null(names(x$rules)) || !is.list(x$rules)) {
     rlang::abort(
@@ -137,7 +142,9 @@ bake.step_time_event <- function(object, new_data, ...) {
 }
 
 get_time_events <- function(rules, column, name, new_data) {
-  res <- lapply(X = rules, FUN = function(x) almanac::alma_in(new_data[[column]],x))
+  res <- lapply(X = rules, FUN = function(x) {
+    almanac::alma_in(new_data[[column]], x)
+  })
   res <- as_tibble(res)
   res
 }
@@ -145,8 +152,8 @@ get_time_events <- function(rules, column, name, new_data) {
 #' @export
 print.step_time_event <-
   function(x, width = max(20, options()$width - 35), ...) {
-    cat("Time events from ")
-    printer(x$columns, x$terms, x$trained, width = width)
+    title <- "Time events from "
+    print_step(x$columns, x$terms, x$trained, width = width, title = title)
     invisible(x)
   }
 

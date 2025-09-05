@@ -27,16 +27,16 @@
 #'
 #' tidy(rec, 1)
 step_minmax <-
-  function(recipe,
-           ...,
-           role = NA,
-           trained = FALSE,
-           res = NULL,
-           columns = NULL,
-           skip = FALSE,
-           id = rand_id("minmax")
+  function(
+    recipe,
+    ...,
+    role = NA,
+    trained = FALSE,
+    res = NULL,
+    columns = NULL,
+    skip = FALSE,
+    id = rand_id("minmax")
   ) {
-
     add_step(
       recipe,
       step_minmax_new(
@@ -107,8 +107,8 @@ minmax_apply <- function(x, res) {
 #' @export
 print.step_minmax <-
   function(x, width = max(20, options()$width - 31), ...) {
-    cat("Min Max scaling on ", sep = "")
-    printer(x$columns, x$terms, x$trained, width = width)
+    title <- "Min Max scaling on "
+    print_step(x$columns, x$terms, x$trained, width = width, title = title)
     invisible(x)
   }
 

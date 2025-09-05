@@ -49,17 +49,17 @@
 #'
 #' tidy(rec, 1)
 step_robust <-
-  function(recipe,
-           ...,
-           role = NA,
-           trained = FALSE,
-           range = c(0.25, 0.75),
-           res = NULL,
-           columns = NULL,
-           skip = FALSE,
-           id = rand_id("robust")
+  function(
+    recipe,
+    ...,
+    role = NA,
+    trained = FALSE,
+    range = c(0.25, 0.75),
+    res = NULL,
+    columns = NULL,
+    skip = FALSE,
+    id = rand_id("robust")
   ) {
-
     add_step(
       recipe,
       step_robust_new(
@@ -135,8 +135,8 @@ robust_apply <- function(x, res) {
 #' @export
 print.step_robust <-
   function(x, width = max(20, options()$width - 31), ...) {
-    cat("Robust scaling on ", sep = "")
-    printer(x$columns, x$terms, x$trained, width = width)
+    title <- "Robust scaling on "
+    print_step(x$columns, x$terms, x$trained, width = width, title = title)
     invisible(x)
   }
 
